@@ -35,17 +35,27 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'telloner.apps.tellonym_api'
+    'corsheaders',
+    'sslserver',
+    'telloner.apps.tellonym_api',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    "https://telloner.netlify.com",
+    "http://192.168.0.100:3000"
+]
+
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'telloner.urls'
 
@@ -115,5 +125,3 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-
-# Authentication

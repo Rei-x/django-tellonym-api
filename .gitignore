@@ -5,4 +5,6 @@
 __pycache__
 media
 secret.py
-test_credentials.py
+credentials.py
+cert.pem
+key.pem

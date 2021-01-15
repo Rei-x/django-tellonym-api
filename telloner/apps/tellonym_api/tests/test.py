@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
-from .test_credentials import test_credentials
+from .credentials import test_credentials
+import time
 
 
 class LoginTest(TestCase):
@@ -15,6 +16,8 @@ class LoginTest(TestCase):
         response = self.client.post(reverse('tellonym_api:login'), bad_credentials)
         self.assertEqual(response.status_code, 401)
 
+    def tearDown(self):
+        time.sleep(1)
 
 class ListTest(TestCase):
     def test_no_post_data(self):

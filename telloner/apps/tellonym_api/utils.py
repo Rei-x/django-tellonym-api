@@ -6,4 +6,5 @@ def hash_text(text):
 
 
 def error_dict(message):
-    return {"Error": message}
+    return {"Success": False,
+            "Error": message}
