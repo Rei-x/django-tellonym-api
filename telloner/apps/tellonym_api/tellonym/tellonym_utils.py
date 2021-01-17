@@ -8,9 +8,9 @@ def get_token(username, password):
         client = Client.Tellonym(username=username, password=password)
         return client.auth
     except RateLimitError:
-        return error_dict("Slow down")
+        return error_dict("Zwolnij")
     except WrongCredentialsError:
-        return error_dict("Incorrect username or password")
+        return error_dict("Niepoprawny login lub hasło")
 
 
 def get_username_from_token(token):
@@ -18,7 +18,7 @@ def get_username_from_token(token):
     try:
         user = client.get_profile()
     except Exception as err:
-        return error_dict("Invalid token.")
+        return error_dict("Niepoprawny token")
     return user.username
 
 
@@ -27,6 +27,6 @@ def get_tells(token):
     try:
         tells = client.get_tells()
     except Exception:
-        return error_dict("Invalid token.")
+        return error_dict("Niepoprawny token")
     return tells
 

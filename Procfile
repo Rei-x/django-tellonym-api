@@ -1,0 +1,1 @@
+web: gunicorn telloner.wsgi --log-file -

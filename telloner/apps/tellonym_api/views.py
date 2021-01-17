@@ -1,6 +1,6 @@
 from .models import TellonymUser, Tellonym
 from .tellonym import tellonym_utils
-from .utils import hash_text
+from .utils import hash_text, error_dict
 from .authentication import get_user
 from django.core import serializers
 from django.db import IntegrityError
@@ -13,13 +13,13 @@ import json
 @require_http_methods(["GET"])
 def list_tellonyms(request):
     try:
-        username = request.COOKIES['Username']
-        token = request.COOKIES['Auth']
+        username = request.headers['Username']
+        token = request.headers['Auth']
     except Exception:
-        return HttpResponse(status=401)
+        return JsonResponse(error_dict('Nie jesteś zalogowany'), status=401)
 
     user = get_user(username, token)
-
+    print(username, token)
     if isinstance(user, TellonymUser):
         tells = tellonym_utils.get_tells(token)
         user.add_tells(tells)
@@ -30,9 +30,13 @@ def list_tellonyms(request):
 
 @require_http_methods(["POST"])
 def login(request):
-
-    username = request.POST['username']
-    password = request.POST['password']
+    try:
+        username = request.POST['username']
+        password = request.POST['password']
+        if not username or not password:
+            raise KeyError
+    except KeyError:
+        return JsonResponse(error_dict('Wypełnij wszystkie pola formularza'))
 
     token = tellonym_utils.get_token(username, password)
 
@@ -46,13 +50,16 @@ def login(request):
             user.hashed_token = hashed_token
             user.save()
 
+        response = JsonResponse({"Success": True,
+                                 'Username': username,
+                                 'Auth': token
+                                 }, status=200)
         cookie_expire = datetime.datetime.now() + datetime.timedelta(days=369)
-        response = JsonResponse({"Success": True}, status=200)
         response.set_cookie('Username', username, expires=cookie_expire, samesite='None', secure=True)
         response.set_cookie('Auth', token, expires=cookie_expire, samesite='None', secure=True)
 
         return response
-    return JsonResponse(token, status=401)
+    return JsonResponse(token, status=200)
 
 
 @require_http_methods(["PATCH"])
@@ -74,4 +81,4 @@ def update_tellonym(request, tellonym_id):
 
         return HttpResponse(status=204)
 
-    return Http404
+    return JsonResponse(error_dict("Nie jesteś zalogowany"), status=200)
