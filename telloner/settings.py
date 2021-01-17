@@ -53,7 +53,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "https://telloner.netlify.com",
+    "https://telloner.netlify.app",
     "http://192.168.0.100:3000"
 ]
 
