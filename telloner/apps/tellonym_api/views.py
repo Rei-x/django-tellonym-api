@@ -19,11 +19,11 @@ def list_tellonyms(request):
         return JsonResponse(error_dict('Nie jesteś zalogowany'), status=401)
 
     user = get_user(username, token)
-    print(username, token)
+
     if isinstance(user, TellonymUser):
         tells = tellonym_utils.get_tells(token)
         user.add_tells(tells)
-        json_tells = serializers.serialize('json', user.tellonym_set.filter(state='NEW'), fields=('text'))
+        json_tells = serializers.serialize('json', user.tellonym_set.filter(state='NEW').order_by('-pk'), fields=('text'))
         return HttpResponse(json_tells, content_type="application/json")
     raise Http404
 
@@ -64,9 +64,11 @@ def login(request):
 
 @require_http_methods(["PATCH"])
 def update_tellonym(request, tellonym_id):
-
-    username = request.COOKIES.get('Username')
-    token = request.COOKIES.get('Auth')
+    try:
+        username = request.headers['Username']
+        token = request.headers['Auth']
+    except Exception:
+        return JsonResponse(error_dict('Nie jesteś zalogowany'), status=401)
 
     user = get_user(username, token)
 
@@ -77,8 +79,10 @@ def update_tellonym(request, tellonym_id):
 
         tellonym = Tellonym.objects.get(pk=tellonym_id)
         tellonym.state = data['state']
+        if "text" in data:
+            tellonym.text = data['text']
         tellonym.save()
 
         return HttpResponse(status=204)
 
-    return JsonResponse(error_dict("Nie jesteś zalogowany"), status=200)
+    return JsonResponse(error_dict("Nie jesteś zalogowany"), status=401)

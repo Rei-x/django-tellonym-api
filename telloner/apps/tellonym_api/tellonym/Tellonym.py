@@ -1,4 +1,6 @@
 import requests
+import random
+import string
 from .exceptions import *
 from .Profile import Profile
 from .Tell import Tell
@@ -52,7 +54,7 @@ class Tellonym:
 
         body = {
             'country': 'DE',
-            'deviceName': 'tellonym-for-python',
+            'deviceName': ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(32)),
             'deviceType': 'ios',
             'lang': 'de',
             'email': username,
